@@ -6,14 +6,14 @@ import numpy
 
 
 def main():
-    #uncomment and change names accordingly:
+    # uncomment and change names accordingly:
 
     # df_portTrainedDSFull = processPortDS('port_full_trained.csv')
     # Vertex AI
     # predictedG3Output, G3, [sex, Pstatus]
-    #df_portTrainedDSFull = pd.read_csv("port_trained.csv")
+    # df_portTrainedDSFull = pd.read_csv("port_trained.csv")
     # predictedScore, score, [gender, region, age_band, imd_band]
-    #df_moocTrainedDSFull = processMOOCDS('complete_training_mooc.csv')
+    # df_moocTrainedDSFull = processMOOCDS('complete_training_mooc.csv')
 
     # print(df_portTrainedDSFull)
 
@@ -37,13 +37,13 @@ def main():
 
     # random forest
     # final_result_pred, final_result_number, [gender, Pstatus]
-    df_portTrainedDSFull = pd.read_csv("OULAD_random_forest_pred.csv")
-    df_moocTrainedDSFull = pd.read_csv("OULAD_random_forest_pred.csv")
+    # df_portTrainedDSFull = pd.read_csv("OULAD_random_forest_pred.csv")
+    # df_moocTrainedDSFull = pd.read_csv("OULAD_random_forest_pred.csv")
 
     # SVM
     # final_result_pred, final_result_number, [gender, Pstatus]
-    #df_portTrainedDSFull = pd.read_csv("OULAD_SVM_pred.csv")
-    #df_moocTrainedDSFull = pd.read_csv("OULAD_SVM_pred.csv")
+    df_portTrainedDSFull = pd.read_csv("OULAD_SVM_pred.csv")
+    df_moocTrainedDSFull = pd.read_csv("OULAD_SVM_pred.csv")
 
     # df = pd.read_csv('portdata.csv')
     # print(df)
@@ -56,6 +56,7 @@ def main():
     df = pd.read_csv(filename)
     #print(df)
     """
+    """
     print("classification prediction/actual/group:")
     PORT_pred_val = input("Input predicted attribute\n")
     PORT_actual_val = input("Input actual attribute\n")
@@ -65,11 +66,19 @@ def main():
     MOOC_pred_val = input("Input predicted attribute\n")
     MOOC_actual_val = input("Input actual attribute\n")
     MOOC_group = input("Input group attribute\n")
+    """
 
-    #determineMulticlass(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
+    # hardcode for test:
+    PORT_pred_val = "final_result_pred"
+    PORT_actual_val = "final_result_number"
+    PORT_group = "imd_band"
+
+    MOOC_pred_val = PORT_pred_val
+    MOOC_actual_val = PORT_actual_val
+    MOOC_group = PORT_group
 
     correctInput = False
-    #select output to calculate
+    # select output to calculate
     while not correctInput:
         fairness_metric = input(
             "Select Fairness Metric\n[All] Run all\n[C] All Classification\n[R] All Regression\nParity-based Metrics:\n [1] Statistical/Demographic Parity\n [2] Disparte "
@@ -253,9 +262,9 @@ def determineMulticlass(df, pred_val=None, actual_val=None, group=None):
     if group is None:
         group = input("Input group attribute\n")
 
-    #initiate the variables
+    # initiate the variables
     rateDict = dict()
-    #values is a list of unique actual values
+    # values is a list of unique actual values
     values = sorted(list(set(df[actual_val])))
     print(values)
 
@@ -264,8 +273,9 @@ def determineMulticlass(df, pred_val=None, actual_val=None, group=None):
         # if the group isnt in the dict
         if group_x not in rateDict:
             # create new dictionary key and set the value to a list of zeros thats the length of values
-            rateDict[group_x] = [[0]*len(values) for _ in range(len(values))]
-            #print(rateDict)
+            rateDict[group_x] = [[0] * len(values) for _ in range(len(values))]
+            rateDict[group_x][values.index(pred_x)][values.index(act_x)] += 1
+            # print(rateDict)
         else:
             #
             rateDict[group_x][values.index(pred_x)][values.index(act_x)] += 1
@@ -338,7 +348,7 @@ def equal_opportunity(df, rates=None, pred_val=None, actual_val=None, group=None
     # if choices.lower() == "all":
     print("Rates:")
     print(rates)
-    #get the list of tprs from rates
+    # get the list of tprs from rates
     listOfTPR = []
     for x in rates:
         listOfTPR.append(rates[x][0])
@@ -349,7 +359,7 @@ def equal_opportunity(df, rates=None, pred_val=None, actual_val=None, group=None
     minVal = min(listOfTPR)
     maxVal = max(listOfTPR)
     result = fourFifths(minVal, maxVal)
-    #prints result
+    # prints result
     if result:
         print("Equal Opportunity: Passed!")
     else:
@@ -366,11 +376,11 @@ def equalized_odds(df, pred_val=None, actual_val=None, group=None):
     :param group: group value
     :return: none
     '''
-    #determine rates
+    # determine rates
     rates = determineProbabilityRates(df, pred_val, actual_val, group)
-    #determine tpr
+    # determine tpr
     TPR = equal_opportunity(df, rates, pred_val, actual_val, group)
-    #get fpr from rates
+    # get fpr from rates
     listOfFPR = []
     for x in rates:
         listOfFPR.append(rates[x][1])
@@ -382,7 +392,7 @@ def equalized_odds(df, pred_val=None, actual_val=None, group=None):
     # print(min(listOfFPR), max(listOfFPR))
     FPR = fourFifths(minVal, maxVal)
 
-    #do fourth fifths rule and print output
+    # do fourth fifths rule and print output
     if FPR and TPR:
         print("Both are true, therefore\n Equalized Odds: Passed\n")
         return True
@@ -400,14 +410,15 @@ def overallAccuracyEquality(df, pred_val=None, actual_val=None, group=None):
     :param group: group value
     :return: none
     '''
-    #get rates
+    # get rates
     rates = determineMulticlass(df, pred_val, actual_val, group)
-    #print(rates)
-    #create dictionary
+    # print(rates)
+    # create dictionary
     dictOfTPRTNR = dict()
-    #print(type(rates))
-    #look at the rates items
+    # print(type(rates))
+    # look at the rates items
     for key, value in rates.items():
+        # print(key, value)
         for i in range(len(value)):
             for j in range(len(value[i])):
                 # creation of the n-by-n matrix
@@ -420,18 +431,19 @@ def overallAccuracyEquality(df, pred_val=None, actual_val=None, group=None):
                 else:
                     # else add just to total
                     dictOfTPRTNR[key] = [dictOfTPRTNR[key][0], dictOfTPRTNR[key][1] + value[i][j]]
-        #divide sum by total to get percentage for each group
-        dictOfTPRTNR[key] = dictOfTPRTNR[key][0]/dictOfTPRTNR[key][1]
+                # print(key, dictOfTPRTNR[key])
+        # divide sum by total to get percentage for each group
+        dictOfTPRTNR[key] = dictOfTPRTNR[key][0] / dictOfTPRTNR[key][1]
     print(dictOfTPRTNR)
     listOfTPRTNR = []
-    #just look at values to compare and do 4/5ths rule
+    # just look at values to compare and do 4/5ths rule
     for key, value in dictOfTPRTNR.items():
         listOfTPRTNR.append(value)
     minVal = min(listOfTPRTNR)
     maxVal = max(listOfTPRTNR)
     print(minVal, maxVal)
     result = fourFifths(minVal, maxVal)
-    #print result
+    # print result
     if result:
         print("Overall Accuracy Equality: Passed!")
     else:
@@ -449,7 +461,7 @@ def conditionalUseAccuracyEquality(df, pred_val=None, actual_val=None, group=Non
         :return: none
     '''
     rates = determineMulticlass(df, pred_val, actual_val, group)
-    #print(len(rates))
+    # print(len(rates))
     dictOfTR = dict()
     listLength = len(set(df[actual_val]))
     # print(type(rates))
@@ -459,16 +471,16 @@ def conditionalUseAccuracyEquality(df, pred_val=None, actual_val=None, group=Non
             for j in range(len(value[i])):
                 if key not in dictOfTR:
                     # initilize value of key to a bunch of zeros, example below
-                    dictOfTR[key] = [0]*(listLength+1) # ex: [A/A, B/B, C/C, D/D, F/F, TOTAL]
-                    #print(dictOfTR)
+                    dictOfTR[key] = [0] * (listLength + 1)  # ex: [A/A, B/B, C/C, D/D, F/F, TOTAL]
+                    # print(dictOfTR)
                 if i == j:
-                    #if i equals j, increment one for act = pred
+                    # if i equals j, increment one for act = pred
                     dictOfTR[key][j] = value[i][j]
-                #add value to total
+                # add value to total
                 dictOfTR[key][-1] += value[i][j]
-    #print(dictOfTR)
+    # print(dictOfTR)
     listOfTR = []
-    #iterate through true rates
+    # iterate through true rates
     for key, value in dictOfTR.items():
         for x in range(len(value)):
             # convert to percentages by dividing by total
@@ -482,11 +494,11 @@ def conditionalUseAccuracyEquality(df, pred_val=None, actual_val=None, group=Non
         # do four fifths on each true rate (ex: look at all the different A/A, B/B, C/C, etc.
         minVal = min(comparedList)
         maxVal = max(comparedList)
-        #print(minVal, maxVal)
+        # print(minVal, maxVal)
         result = fourFifths(minVal, maxVal)
         if not result:
             break
-    #print results
+    # print results
     if result:
         print("Conditional Use Accuracy Equality: Passed!")
     else:
@@ -506,13 +518,14 @@ def treatmentEquality(df, pred_val=None, actual_val=None, group=None):
     # determine rates
     rates = determineProbabilityRates(df, pred_val, actual_val, group)
     listOfFPRFNR = []
+    print(rates)
     for x in rates:
         if (rates[x][1] == 0):
-            print("TNR", rates[x][1], "equals zero")
+            print("FPR", rates[x][1], "equals zero so cannot have a true comparison")
             listOfFPRFNR = None
             break
         elif (rates[x][3] == 0):
-            print("FNR", rates[x][3], "equals zero")
+            print("FNR", rates[x][3], "equals zero so cannot have a true comparison")
             listOfFPRFNR = None
             break
         else:
@@ -522,7 +535,7 @@ def treatmentEquality(df, pred_val=None, actual_val=None, group=None):
         minVal = min(listOfFPRFNR)
         maxVal = max(listOfFPRFNR)
         # print(listOfFPRFNR)
-        #do fourth fifths rule and print output
+        # do fourth fifths rule and print output
         result = fourFifths(minVal, maxVal)
         if result:
             print("Treatment Equality: Success!")
@@ -540,7 +553,7 @@ def equalizingDisincentives(df, pred_val=None, actual_val=None, group=None):
         :param df: trained data from user
         :return: None, prints if data successfully passed or failed the metric
     '''
-    #determine rate
+    # determine rate
     rates = determineProbabilityRates(df, pred_val, actual_val, group)
     listOfTPRFPR = []
     # tpr - fpr
@@ -549,7 +562,7 @@ def equalizingDisincentives(df, pred_val=None, actual_val=None, group=None):
     minVal = min(listOfTPRFPR)
     maxVal = max(listOfTPRFPR)
     print(listOfTPRFPR)
-    #do fourth fifths rule and print output
+    # do fourth fifths rule and print output
     result = fourFifths(minVal, maxVal)
     if result:
         print("Equalizing Disincentives: Passed!")
@@ -590,8 +603,8 @@ def statDemoParity(df, trained=None, group=None):
 
     # initialises dictionary groupDict
     groupDict = dict()
-    #print(trained, group, positiveValue)
-    #print(df)
+    # print(trained, group, positiveValue)
+    # print(df)
     # iterates through the trained column and group column of the dataframe
     for predicted_x, group_x in zip(df[trained], df[group]):
         # if the group name is not already in the dictionary, create a new dictionary definition and set the values
@@ -656,7 +669,7 @@ def disparate_impact(df, trained=None, group=None):
     # percentage
     for x in groupDict:
         groupDict[x] = groupDict[x][0] / groupDict[x][1]
-        #print(x, ":", groupDict[x])
+        # print(x, ":", groupDict[x])
     # finds lowest percentage
     lowestPositiveRate = min(groupDict, key=groupDict.get)
     print("low:", groupDict[lowestPositiveRate])
@@ -673,7 +686,8 @@ def disparate_impact(df, trained=None, group=None):
         print("Disparate Impact: Failed!\n")
     return ratio
 
-#UNUSED, IGNORE:
+
+# UNUSED, IGNORE:
 def getActualRates(df, actual_val, group):
     ''''
         determine actual rates
@@ -717,20 +731,20 @@ def differencesInSquaredError(df, pred_val=None, actual_val=None, group=None):
 
     # print("groupTotals:", groupTotals)
     getValForCalc = dict()
-    #look at each row in the dataframe
+    # look at each row in the dataframe
     for pred_x, act_x, group_x in zip(df[pred_val], df[actual_val], df[group]):
         # add group_x as dict key
         # sum of all rows: (pred-act)^2
         if group_x not in getValForCalc:
-            #initialize value of new key to (pred-act)^2 and count to be 1
+            # initialize value of new key to (pred-act)^2 and count to be 1
             getValForCalc[group_x] = [pow(float(pred_x) - float(act_x), 2), 1]
             # print(getValForCalc[group_x])
         else:
-            #cont summing (pred-act)^2 and incrementing count
+            # cont summing (pred-act)^2 and incrementing count
             getValForCalc[group_x] = [getValForCalc[group_x][0] + pow(float(pred_x) - float(act_x), 2),
                                       getValForCalc[group_x][1] + 1]
     calcResult = []
-    #calculate total result of sum/totalcount
+    # calculate total result of sum/totalcount
     for x in getValForCalc:
         # print(x)
         calcResult.append(getValForCalc[x][0] / getValForCalc[x][1])
