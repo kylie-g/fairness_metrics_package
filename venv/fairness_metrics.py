@@ -3,248 +3,73 @@ import math
 
 import pandas as pd
 import numpy
+def run_all(dataset, predict, actual, group):
+    print("Calculating All")
+    print("Calculating Statistical/Demographic Parity")
+    stat_demo_parity(dataset, predict, group)
+    print("==============================================\n")
+    print("Calculating Disparate Impact")
+    disparate_impact(dataset, actual, group)
+    print("==============================================\n")
+    print("Calculating Equal Opportunity")
+    equal_opportunity(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Equalized Odds")
+    equalized_odds(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Overall Accuracy Equality")
+    overall_accuracy_equality(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Conditional Use Accuracy Equality")
+    conditional_use_accuracy_equality(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Treatment Equality")
+    treatment_equality(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Equalizing Disincentives")
+    equalizing_disincentives(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Differences in Squared Error")
+    differences_in_squared_error(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Balance between Subgroups")
+    balance_btwn_subgroups(dataset, predict, actual, group)
+    print("==============================================\n")
 
-
-def main():
-    # uncomment and change names accordingly:
-
-    # df_portTrainedDSFull = processPortDS('port_full_trained.csv')
-    # Vertex AI
-    # predictedG3Output, G3, [sex, Pstatus]
-    # df_portTrainedDSFull = pd.read_csv("port_trained.csv")
-    # predictedScore, score, [gender, region, age_band, imd_band]
-    # df_moocTrainedDSFull = processMOOCDS('complete_training_mooc.csv')
-
-    # print(df_portTrainedDSFull)
-
-    # auto keras
-    # prediction, G3, [sex, Pstatus]
-    AKdf_portTrainedDSFull = pd.read_csv("autokares_5class_output.csv")
-    # predicted_score, actual_score, [gender, region, age_band, imd_band]
-    AKdf_moocTrainedDSFull = pd.read_csv('autokares_mooc_output.csv')
-
-    # auto sklearn
-    # prediction, ground_truth, [sex, Pstatus]
-    ASdf_portTrainedDSFull = pd.read_csv("auto_sklearn_5class_output.csv")
-    # prediction, ground_truth, [gender, region, age_band, imd_band]
-    ASdf_moocTrainedDSFull = pd.read_csv('auto_sklearn_mooc_output.csv')
-
-    # pycaret
-    # prediction_label, G3, [sex, Pstatus]
-    PCdf_portTrainedDSFull = pd.read_csv("pycaret_5class_output.csv")
-    # prediction_label, score, [gender, region, age_band, imd_band]
-    PCdf_moocTrainedDSFull = pd.read_csv('pycaret_mooc_output.csv')
-
-    # random forest
-    # final_result_pred, final_result_number, [gender, Pstatus]
-    # df_portTrainedDSFull = pd.read_csv("OULAD_random_forest_pred.csv")
-    # df_moocTrainedDSFull = pd.read_csv("OULAD_random_forest_pred.csv")
-
-    # SVM
-    # final_result_pred, final_result_number, [gender, Pstatus]
-    df_portTrainedDSFull = pd.read_csv("OULAD_SVM_pred.csv")
-    df_moocTrainedDSFull = pd.read_csv("OULAD_SVM_pred.csv")
-
-    # df = pd.read_csv('portdata.csv')
-    # print(df)
-    # disparte_impact(df)
-    # determineRates(df)
-
-    """
-    #temp - will change later to be user input
-    filename = input("Input filename of trained data (.csv):\n")
-    df = pd.read_csv(filename)
-    #print(df)
-    """
-    """
-    print("classification prediction/actual/group:")
-    PORT_pred_val = input("Input predicted attribute\n")
-    PORT_actual_val = input("Input actual attribute\n")
-    PORT_group = input("Input group attribute\n")
-
-    print("regression prediction/actual/group:")
-    MOOC_pred_val = input("Input predicted attribute\n")
-    MOOC_actual_val = input("Input actual attribute\n")
-    MOOC_group = input("Input group attribute\n")
-    """
-
-    # hardcode for test:
-    PORT_pred_val = "final_result_pred"
-    PORT_actual_val = "final_result_number"
-    PORT_group = "imd_band"
-
-    MOOC_pred_val = PORT_pred_val
-    MOOC_actual_val = PORT_actual_val
-    MOOC_group = PORT_group
-
-    correctInput = False
-    # select output to calculate
-    while not correctInput:
-        fairness_metric = input(
-            "Select Fairness Metric\n[All] Run all\n[C] All Classification\n[R] All Regression\nParity-based Metrics:\n [1] Statistical/Demographic Parity\n [2] Disparte "
-            "Impact\nConfusion Matrix-based Metrics\n [3] Equal Opportunity\n [4] Equalized Odds\n [5] Overall "
-            "Accuracy Equality\n [6] Conditional Use Accuracy Equality\n [7] Treatment Equality\n [8] Equalizing "
-            "Disincentives\nScore-based Metics\n [9] Differences in Squared Error\n [10] Balance for positive and "
-            "negative class\n")
-        if fairness_metric == "1":
-            correctInput = True
-            print("Calculating Statistical/Demographic Parity")
-            statDemoParity(df_portTrainedDSFull, PORT_pred_val, PORT_group)
-        elif fairness_metric == "2":
-            correctInput = True
-            print("Calculating Disparate Impact")
-            disparate_impact(df_portTrainedDSFull, PORT_actual_val, PORT_group)
-        elif fairness_metric == "3":
-            correctInput = True
-            print("Calculating Equal Opportunity")
-            equal_opportunity(df_portTrainedDSFull, None, PORT_pred_val, PORT_actual_val, PORT_group)
-        elif fairness_metric == "4":
-            correctInput = True
-            print("Calculating Equalized Odds")
-            equalized_odds(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-        elif fairness_metric == "5":
-            correctInput = True
-            print("Calculating Overall Accuracy Equality")
-            overallAccuracyEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-        elif fairness_metric == "6":
-            correctInput = True
-            print("Calculating Conditional Use Accuracy Equality")
-            conditionalUseAccuracyEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-        elif fairness_metric == "7":
-            correctInput = True
-            print("Calculating Treatment Equality")
-            treatmentEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-        elif fairness_metric == "8":
-            correctInput = True
-            print("Calculating Equalizing Disincentives")
-            equalizingDisincentives(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-        elif fairness_metric == "9":
-            correctInput = True
-            print("Calculating Differences in Squared Error")
-            differencesInSquaredError(df_moocTrainedDSFull, MOOC_pred_val, MOOC_actual_val, MOOC_group)
-        elif fairness_metric == "10":
-            correctInput = True
-            print("Calculating Balance between Subgroups")
-            balanceBtwnSubgroups(df_moocTrainedDSFull, MOOC_pred_val, MOOC_actual_val, MOOC_group)
-        elif fairness_metric == "All":
-            correctInput = True
-            print("Calculating All")
-            print("Calculating Statistical/Demographic Parity")
-            statDemoParity(df_portTrainedDSFull, PORT_pred_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Disparate Impact")
-            disparate_impact(df_portTrainedDSFull, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Equal Opportunity")
-            equal_opportunity(df_portTrainedDSFull, None, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Equalized Odds")
-            equalized_odds(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Overall Accuracy Equality")
-            overallAccuracyEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Conditional Use Accuracy Equality")
-            conditionalUseAccuracyEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Treatment Equality")
-            treatmentEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Equalizing Disincentives")
-            equalizingDisincentives(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Differences in Squared Error")
-            differencesInSquaredError(df_moocTrainedDSFull, MOOC_pred_val, MOOC_actual_val, MOOC_group)
-            print("==============================================\n")
-            print("Calculating Balance between Subgroups")
-            balanceBtwnSubgroups(df_moocTrainedDSFull, MOOC_pred_val, MOOC_actual_val, MOOC_group)
-            print("==============================================\n")
-        elif fairness_metric == "C":
-            correctInput = True
-            print("Calculating All Classification")
-            print("Calculating Statistical/Demographic Parity")
-            statDemoParity(df_portTrainedDSFull, PORT_pred_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Disparate Impact")
-            disparate_impact(df_portTrainedDSFull, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Equal Opportunity")
-            equal_opportunity(df_portTrainedDSFull, None, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Equalized Odds")
-            equalized_odds(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Overall Accuracy Equality")
-            overallAccuracyEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Conditional Use Accuracy Equality")
-            conditionalUseAccuracyEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Treatment Equality")
-            treatmentEquality(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-            print("Calculating Equalizing Disincentives")
-            equalizingDisincentives(df_portTrainedDSFull, PORT_pred_val, PORT_actual_val, PORT_group)
-            print("==============================================\n")
-        elif fairness_metric == "R":
-            correctInput = True
-            print("Calculating All Regression")
-            print("Calculating Differences in Squared Error")
-            differencesInSquaredError(df_moocTrainedDSFull, MOOC_pred_val, MOOC_actual_val, MOOC_group)
-            print("==============================================\n")
-            print("Calculating Balance between Subgroups")
-            balanceBtwnSubgroups(df_moocTrainedDSFull, MOOC_pred_val, MOOC_actual_val, MOOC_group)
-            print("==============================================\n")
-        else:
-            print("Type 1, 2, 3, 4, 5, 6, 7, 8, 9, or 10 to select")
-
-
-def processPortDS(dataset):
-    '''
-    processing the dataset to fit the format
-    :param dataset:
-    :return: formatted dataset
-    '''
-
-    df_portTrainedDSFull = pd.read_csv(dataset)
-    # print(df)
-    predictedG3Output = []
-    for x in df_portTrainedDSFull["predicted_G3"]:
-        y = "WRONG"
-        dictPG3 = json.loads(x)
-        # ORDER: D C B F A
-        max_index = numpy.argmax(dictPG3["predicted_G3"]["scores"])
-        if max_index == 0:
-            y = "D"
-        elif max_index == 1:
-            y = "C"
-        elif max_index == 2:
-            y = "B"
-        elif max_index == 3:
-            y = "F"
-        elif max_index == 4:
-            y = "A"
-        predictedG3Output.append(y)
-    df_portTrainedDSFull["predictedG3Output"] = predictedG3Output
-    print("Saved!")
-    return df_portTrainedDSFull
-
-
-def processMOOCDS(dataset):
-    '''
-    process the mooc data set
-    :param dataset:
-    :return: formatted dataset
-    '''
-    df_moocTrainedDSFull = pd.read_csv(dataset)
-    # print(df)
-    predictedScore = []
-    for x in df_moocTrainedDSFull["predicted_score"]:
-        dictPG3 = json.loads(x)
-        predictedScore.append(dictPG3["predicted_score"]["value"])
-    df_moocTrainedDSFull["predictedScore"] = predictedScore
-    return df_moocTrainedDSFull
-
+def run_all_classification(dataset, predict, actual, group):
+    print("Calculating All Classification")
+    print("Calculating Statistical/Demographic Parity")
+    stat_demo_parity(dataset, predict, group)
+    print("==============================================\n")
+    print("Calculating Disparate Impact")
+    disparate_impact(dataset, actual, group)
+    print("==============================================\n")
+    print("Calculating Equal Opportunity")
+    equal_opportunity(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Equalized Odds")
+    equalized_odds(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Overall Accuracy Equality")
+    overall_accuracy_equality(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Conditional Use Accuracy Equality")
+    conditional_use_accuracy_equality(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Treatment Equality")
+    treatment_equality(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Equalizing Disincentives")
+    equalizing_disincentives(dataset, predict, actual, group)
+    print("==============================================\n")
+def run_all_regression(dataset, predict, actual, group):
+    print("Calculating All Regression")
+    print("Calculating Differences in Squared Error")
+    differences_in_squared_error(dataset, predict, actual, group)
+    print("==============================================\n")
+    print("Calculating Balance between Subgroups")
+    balance_btwn_subgroups(dataset, predict, actual, group)
+    print("==============================================\n")
 
 def determineMulticlass(df, pred_val=None, actual_val=None, group=None):
     """
@@ -332,7 +157,7 @@ def determineProbabilityRates(df, pred_val=None, actual_val=None, group=None):
     return rateDict
 
 
-def equal_opportunity(df, rates=None, pred_val=None, actual_val=None, group=None):
+def equal_opportunity(df, pred_val=None, actual_val=None, group=None):
     '''
     determines equal opportunity fairness metric
     :param df: dataframe
@@ -342,8 +167,7 @@ def equal_opportunity(df, rates=None, pred_val=None, actual_val=None, group=None
     :param group: group value
     :return: the result of equal opporunity fairness - specifically in relation to tpr
     '''
-    if rates is None:
-        rates = determineProbabilityRates(df, pred_val, actual_val, group)
+    rates = determineProbabilityRates(df, pred_val, actual_val, group)
     # choices = input("List the group names you'd like to assess (comma separated) or 'all' to assess all")
     # if choices.lower() == "all":
     print("Rates:")
@@ -379,7 +203,7 @@ def equalized_odds(df, pred_val=None, actual_val=None, group=None):
     # determine rates
     rates = determineProbabilityRates(df, pred_val, actual_val, group)
     # determine tpr
-    TPR = equal_opportunity(df, rates, pred_val, actual_val, group)
+    TPR = equal_opportunity(df, pred_val, actual_val, group)
     # get fpr from rates
     listOfFPR = []
     for x in rates:
@@ -401,7 +225,7 @@ def equalized_odds(df, pred_val=None, actual_val=None, group=None):
         return False
 
 
-def overallAccuracyEquality(df, pred_val=None, actual_val=None, group=None):
+def overall_accuracy_equality(df, pred_val=None, actual_val=None, group=None):
     '''
     determine overall accuracy equality metric
     :param df: dataframe
@@ -451,7 +275,7 @@ def overallAccuracyEquality(df, pred_val=None, actual_val=None, group=None):
     return result
 
 
-def conditionalUseAccuracyEquality(df, pred_val=None, actual_val=None, group=None):
+def conditional_use_accuracy_equality(df, pred_val=None, actual_val=None, group=None):
     '''
         determine conditional use accuracy equality metric
         :param df: dataframe
@@ -506,7 +330,7 @@ def conditionalUseAccuracyEquality(df, pred_val=None, actual_val=None, group=Non
     return result
 
 
-def treatmentEquality(df, pred_val=None, actual_val=None, group=None):
+def treatment_equality(df, pred_val=None, actual_val=None, group=None):
     ''''
         determine treatment equality metric, if fnr is 0, metric cant be used
         :param df: dataframe
@@ -547,7 +371,7 @@ def treatmentEquality(df, pred_val=None, actual_val=None, group=None):
     return result
 
 
-def equalizingDisincentives(df, pred_val=None, actual_val=None, group=None):
+def equalizing_disincentives(df, pred_val=None, actual_val=None, group=None):
     '''
         Calculates Equalizing Disincentives metric on trained dataset
         :param df: trained data from user
@@ -588,7 +412,7 @@ def fourFifths(minVal, maxVal):
         return False
 
 
-def statDemoParity(df, trained=None, group=None):
+def stat_demo_parity(df, trained=None, group=None):
     '''
         Calculates Statistical/Demo Parity on trained dataset
         :param df: trained data from user
@@ -712,7 +536,7 @@ def getActualRates(df, actual_val, group):
     return actualRates
 
 
-def differencesInSquaredError(df, pred_val=None, actual_val=None, group=None):
+def differences_in_squared_error(df, pred_val=None, actual_val=None, group=None):
     '''
     determeine differences in squared error
     :param df:
@@ -764,7 +588,7 @@ def differencesInSquaredError(df, pred_val=None, actual_val=None, group=None):
         print("Differences In Squared Error: Failed!")
 
 
-def balanceBtwnSubgroups(df, pred_val=None, actual_val=None, group=None):
+def balance_btwn_subgroups(df, pred_val=None, actual_val=None, group=None):
     '''
     Calculates Balance for positive and negative class metric (score-based)
     :param df: trained data from user
