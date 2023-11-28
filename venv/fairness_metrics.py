@@ -3,6 +3,7 @@ import math
 
 import pandas as pd
 import numpy
+__version__ = 'dev'
 def run_all(dataset, predict, actual, group):
     print("Calculating All")
     print("Calculating Statistical/Demographic Parity")
