@@ -3,14 +3,13 @@ import math
 
 import pandas as pd
 import numpy
-__version__ = 'dev'
 def run_all(dataset, predict, actual, group):
     print("Calculating All")
     print("Calculating Statistical/Demographic Parity")
     stat_demo_parity(dataset, predict, group)
     print("==============================================\n")
     print("Calculating Disparate Impact")
-    disparate_impact(dataset, actual, group)
+    disparate_impact(dataset, predict, group)
     print("==============================================\n")
     print("Calculating Equal Opportunity")
     equal_opportunity(dataset, predict, actual, group)
@@ -43,7 +42,7 @@ def run_all_classification(dataset, predict, actual, group):
     stat_demo_parity(dataset, predict, group)
     print("==============================================\n")
     print("Calculating Disparate Impact")
-    disparate_impact(dataset, actual, group)
+    disparate_impact(dataset, predict, group)
     print("==============================================\n")
     print("Calculating Equal Opportunity")
     equal_opportunity(dataset, predict, actual, group)
@@ -149,10 +148,14 @@ def determineProbabilityRates(df, pred_val=None, actual_val=None, group=None):
                                      rateDict[group_x][3] + 1, rateDict[group_x][4] + 1]  # FNR
     # print(rateDict) {2: [15, 0, 8, 1, 24], 3: [15, 1, 4, 0, 20], 4: [34, 0, 11, 1, 46], 1: [5, 0, 3, 0, 8]}
     for x in rateDict:
-        rateDict[x][0] = rateDict[x][0] / rateDict[x][4]
-        rateDict[x][1] = rateDict[x][1] / rateDict[x][4]
-        rateDict[x][2] = rateDict[x][2] / rateDict[x][4]
-        rateDict[x][3] = rateDict[x][3] / rateDict[x][4]
+        #TPR=TP/(TP+FN)
+        rateDict[x][0] = rateDict[x][0] / (rateDict[x][0] + rateDict[x][3])
+        #FPR=FP/(FP+TN)
+        rateDict[x][1] = rateDict[x][1] / rateDict[x][1] + rateDict[x][2]
+        #TNR=TN/(FP+TN)
+        rateDict[x][2] = 1 - rateDict[x][1]
+        #FNR=FN/(TP+FN)
+        rateDict[x][3] = 1 - rateDict[x][0]
         del rateDict[x][4]
     print("Ratedict:", rateDict)
     return rateDict
