@@ -7,7 +7,7 @@ Within the package there are 10 fairness metrics under 3 categories:
 | ------------------------- | ------------------------- | ------------------------- | ------------------------- |
 | <td rowspan="3">-</td> | All Metrics | run_all(_dataset_, _predictedColumn_, _actualColumn_, _group_) |
 |  | All Classification Metrics | run_all_classification(_dataset_, _predictedColumn_, _actualColumn_, _group_) |
-|  | All Regression Metrics | run_all_regression(_dataset_, _predictedColumn_, _actualColumn_, _group_) |
+|  | All Regression Metrics | run_all_regression(_dataset_, _predictedColumn_, _predictedColumn_, _group_) |
 | <td rowspan="2">Parity-based Metrics</td> | Statistical/Demographic Parity | stat_demo_parity(_dataset_, _predictedColumn_, _group_) |
 |  | Disparte Impact | disparte_impact(_dataset_, _actualColumn_, _group_) |
 | <td rowspan="6">Confusion Matrix-based Metrics</td> | Equal Opportunity | equal_opportunity(_dataset_, _predictedColumn_, _actualColumn_, _group_) |
