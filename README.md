@@ -54,3 +54,7 @@ For each record its going to find the absolute value of the difference between e
 This is the same as the Balance Between Subgroups except instead of absolute value, the difference between predicted and actual is squared. This makes it harder to pass because if the misprediction is far from truth, when squaring it, the mistakes get punished harder
 
 ## Installation
+https://pypi.org/project/fairness-metrics/0.0.1/
+Run: pip install fairness-metrics==0.0.1
+
+
